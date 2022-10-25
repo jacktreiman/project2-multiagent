@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+from cmath import inf
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -72,9 +73,35 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        minFoodDist = 10000
+        minPacDist = 10000
+        ghostTimer = 0
+        for i in newFood.asList():
+            if util.manhattanDistance(i, newPos) < minFoodDist:
+        
+                minFoodDist = util.manhattanDistance(i, newPos)
+        
+        score = 0
+        for i in successorGameState.getGhostPositions():
+            if util.manhattanDistance(i, newPos) < minPacDist:
+        
+                minPacDist = util.manhattanDistance(i, newPos)
+        for i in newGhostStates:
+            ghostTimer += i.scaredTimer
+
+        if minPacDist == 0:
+            return -inf
+        if len(newFood.asList()) == 0:
+            return inf
+        stopScore = 0
+        if action == 'Stop':
+            stopScore = -1000
+        score = (1/minFoodDist) - minPacDist/10 + successorGameState.getScore() + stopScore  + ghostTimer
+        
+        return score
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        #return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -135,6 +162,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
