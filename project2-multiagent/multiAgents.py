@@ -13,6 +13,7 @@
 
 
 from cmath import inf
+from xmlrpc.client import MAXINT
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -162,15 +163,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        print(self.value(gameState, 0, 0))
-        return self.value(gameState, 0, 0)[1]
+        
+        val, act = self.value(gameState, 0, 0)
+        return act
 
         
 
         #util.raiseNotDefined()
     def value(self, gameState, player, depth):
-        if self.depth == depth*gameState.getNumAgents() or gameState.isWin() or gameState.isLose(): #or is terminal node
-            return self.evaluationFunction(gameState)
+        if depth == self.depth*gameState.getNumAgents() or gameState.isWin() or gameState.isLose(): #or is terminal node
+            return (self.evaluationFunction(gameState), 'Stop')
         if player == 0:
             return self.maxValue(gameState, player, depth)
         else:
@@ -180,18 +182,22 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def maxValue(self, gameState, player, depth):
         v = -inf
         for moves in gameState.getLegalActions(player):
-            if v < self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1):
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)[0]
+            if v < val:
                 action = moves
-            v = max(v, self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1))
+            v = max(v, val)
                 #store the action not just the eval function
         return (v, action)
 
     def minValue(self, gameState, player, depth):
         v = inf
         for moves in gameState.getLegalActions(player):
-            if v > self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1):
-                    action = moves
-            v = min(v, self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1))
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)[0]
+            if v > val:
+                action = moves
+            v = min(v, val)
         return (v, action)
 
 
@@ -230,7 +236,8 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return 0
+    
 
 # Abbreviation
 better = betterEvaluationFunction
