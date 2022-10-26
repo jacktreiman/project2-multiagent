@@ -162,29 +162,37 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        print(self.value(gameState, 0, 0))
+        return self.value(gameState, 0, 0)[1]
+
+        
 
         #util.raiseNotDefined()
-     def value(self, gameState, player, depth):
+    def value(self, gameState, player, depth):
         if self.depth == depth*gameState.getNumAgents() or gameState.isWin() or gameState.isLose(): #or is terminal node
-            return self.evaluationFunction()
+            return self.evaluationFunction(gameState)
         if player == 0:
-            return self.maxValue(self, gameState, player, depth)
+            return self.maxValue(gameState, player, depth)
         else:
-           return self.minValue(self, gameState, player, depth)
+            return self.minValue(gameState, player, depth)
 
 
     def maxValue(self, gameState, player, depth):
         v = -inf
         for moves in gameState.getLegalActions(player):
-            v = max(v, self.value(gameState.generateSuccessor(player, moves)), (player+1)%gameState.getNumAgents(), depth+1)
-            #store the action not just the eval function
-        return v
+            if v < self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1):
+                action = moves
+            v = max(v, self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1))
+                #store the action not just the eval function
+        return (v, action)
 
     def minValue(self, gameState, player, depth):
         v = inf
         for moves in gameState.getLegalActions(player):
-            v = min(v, self.value(gameState.generateSuccessor(player, moves)), (player+1)%gameState.getNumAgents(), depth+1)
-        return v
+            if v > self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1):
+                    action = moves
+            v = min(v, self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1))
+        return (v, action)
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
