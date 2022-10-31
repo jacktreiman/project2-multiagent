@@ -205,8 +205,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
-
-     def getAction(self, gameState):
+    def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
@@ -283,6 +282,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def maxValue(self, gameState, player, depth):
         v = -inf
+        action = 'Stop'
         for moves in gameState.getLegalActions(player):
             #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
             val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)[0]
@@ -306,9 +306,45 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+    
+    What we did for our better evaluation function is create a linear combination of 
+    the min food distance, the min ghost distance, current score, and ghost timer. For the min 
+    food distance, we used 1/minFood, because closer food would be better, while for ghost we did
+    -minghost distance/10, because closer ghosts should be negative. Lastly, we added to the score
+    the total number of seconds the scaredghosts had left. 
     """
+
+
     "*** YOUR CODE HERE ***"
-    return 0
+    #successorGameState = currentGameState.generatePacmanSuccessor(action)
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    minFoodDist = 10000
+    minPacDist = 10000
+    ghostTimer = 0
+    for i in newFood.asList():
+        if util.manhattanDistance(i, newPos) < minFoodDist:
+        
+            minFoodDist = util.manhattanDistance(i, newPos)
+        
+    score = 0
+    for i in currentGameState.getGhostPositions():
+        if util.manhattanDistance(i, newPos) < minPacDist:
+        
+            minPacDist = util.manhattanDistance(i, newPos)
+    for i in newGhostStates:
+        ghostTimer += i.scaredTimer
+
+    if minPacDist == 0:
+        return -inf
+    if len(newFood.asList()) == 0:
+        return inf
+    score = (1/minFoodDist) - 1/(minPacDist) + currentGameState.getScore()  + ghostTimer
+    
+    return score
+    #return 0
     
 
 # Abbreviation
