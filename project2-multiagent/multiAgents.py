@@ -206,12 +206,52 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     Your minimax agent with alpha-beta pruning (question 3)
     """
 
-    def getAction(self, gameState):
+     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        return util.raiseNotDefined()
+        #util.raiseNotDefined()
+        val, act = self.value(gameState, 0, 0, -inf, inf)
+        return act
+
+
+    def value(self, gameState, player, depth, alpha, beta):
+        if depth == self.depth*gameState.getNumAgents() or gameState.isWin() or gameState.isLose(): #or is terminal node
+            return (self.evaluationFunction(gameState), 'Stop')
+        if player == 0:
+            return self.maxValue(gameState, player, depth, alpha, beta)
+        else:
+            return self.minValue(gameState, player, depth, alpha, beta)
+
+
+    def maxValue(self, gameState, player, depth, alpha, beta):
+        v = -inf
+        for moves in gameState.getLegalActions(player):
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1, alpha, beta)[0]
+            if v < val:
+                action = moves
+            v = max(v, val)
+                #store the action not just the eval function
+            alpha = max(v,alpha)
+            if(alpha>beta):
+                return (v,action)
+        return (v, action)
+
+    def minValue(self, gameState, player, depth, alpha, beta):
+        v = inf
+        for moves in gameState.getLegalActions(player):
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1, alpha, beta)[0]
+            if v > val:
+                action = moves
+            v = min(v, val)
+            beta = min(v,beta)
+            if(alpha>beta):
+                return (v,action)
+        return (v, action)
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
