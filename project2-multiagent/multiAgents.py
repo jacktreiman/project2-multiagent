@@ -211,7 +211,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -226,7 +226,39 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        val, act = self.value(gameState, 0, 0)
+        return act
+
+        
+
+        #util.raiseNotDefined()
+    def value(self, gameState, player, depth):
+        if depth == self.depth*gameState.getNumAgents() or gameState.isWin() or gameState.isLose(): #or is terminal node
+            return (self.evaluationFunction(gameState), 'Stop')
+        if player == 0:
+            return self.maxValue(gameState, player, depth)
+        else:
+            return self.exp_Value(gameState, player, depth)
+
+
+    def maxValue(self, gameState, player, depth):
+        v = -inf
+        for moves in gameState.getLegalActions(player):
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            val = self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)[0]
+            if v < val:
+                action = moves
+            v = max(v, val)
+                #store the action not just the eval function
+        return (v, action)
+
+    def exp_Value(self, gameState, player, depth):
+        v = 0
+        length = len(gameState.getLegalActions(player))
+        for moves in gameState.getLegalActions(player):
+            #print(type(self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)))
+            v += (1/length)*self.value(gameState.generateSuccessor(player, moves), (player+1)%gameState.getNumAgents(), depth+1)[0]
+        return (v, "Stop")
 
 def betterEvaluationFunction(currentGameState):
     """
