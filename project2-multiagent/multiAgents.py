@@ -310,7 +310,7 @@ def betterEvaluationFunction(currentGameState):
     What we did for our better evaluation function is create a linear combination of 
     the min food distance, the min ghost distance, current score, and ghost timer. For the min 
     food distance, we used 1/minFood, because closer food would be better, while for ghost we did
-    -minghost distance/10, because closer ghosts should be negative. Lastly, we added to the score
+    -1/minghostdist, because closer ghosts should be higher negative. Lastly, we added to the score
     the total number of seconds the scaredghosts had left. 
     """
 
